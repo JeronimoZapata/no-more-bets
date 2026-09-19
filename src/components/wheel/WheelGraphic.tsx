@@ -1,0 +1,11 @@
+import type { WheelOption } from '../../types'
+
+const COLORS = ['#f1ff48', '#ff6b57', '#b5a2ff', '#74e3b1', '#ffb649', '#71c8ff', '#ff8bc2', '#d5ffb1']
+function point(cx: number, cy: number, radius: number, angle: number) { const radians = (angle - 90) * Math.PI / 180; return { x: cx + radius * Math.cos(radians), y: cy + radius * Math.sin(radians) } }
+function wedgePath(index: number, count: number) { const start = index * 360 / count; const end = (index + 1) * 360 / count; const a = point(160, 160, 148, start); const b = point(160, 160, 148, end); return `M 160 160 L ${a.x} ${a.y} A 148 148 0 ${end - start > 180 ? 1 : 0} 1 ${b.x} ${b.y} Z` }
+function shorten(value: string) { return value.length > 13 ? value.slice(0, 12) + '…' : value }
+
+export function WheelGraphic({ options, rotation, spinning }: { options: WheelOption[]; rotation: number; spinning: boolean }) {
+  const count = Math.max(options.length, 1)
+  return <div className="relative mx-auto aspect-square w-full max-w-[520px] p-3"><div className="absolute left-1/2 top-0 z-10 -translate-x-1/2 drop-shadow-md"><svg width="44" height="54" viewBox="0 0 44 54"><path d="M22 52 2 10Q0 2 9 2h26q9 0 7 8Z" fill="#171713"/><circle cx="22" cy="12" r="5" fill="#f1ff48"/></svg></div><svg viewBox="0 0 320 320" className="h-full w-full overflow-visible drop-shadow-[7px_8px_0_#171713]" aria-label="Ruleta"><g style={{ transformOrigin: '160px 160px', transform: `rotate(${rotation}deg)`, transition: spinning ? 'transform 4.5s cubic-bezier(.12,.72,.08,1)' : 'none' }}>{options.length === 0 ? <circle cx="160" cy="160" r="148" fill="#e8e5dc" stroke="#171713" strokeWidth="4" /> : options.map((option, index) => { const mid = (index + .5) * 360 / count; const pos = point(160, 160, 91, mid); return <g key={option.id}><path d={wedgePath(index, count)} fill={COLORS[index % COLORS.length]} stroke="#171713" strokeWidth="3"/><text x={pos.x} y={pos.y} textAnchor="middle" dominantBaseline="middle" fontSize={count > 8 ? 9 : count > 5 ? 11 : 14} fontWeight="900" fill="#171713" transform={`rotate(${mid} ${pos.x} ${pos.y})`}>{shorten(option.name).toUpperCase()}</text></g> })}<circle cx="160" cy="160" r="20" fill="#fff" stroke="#171713" strokeWidth="4"/><circle cx="160" cy="160" r="7" fill="#171713"/></g></svg></div>
+}
