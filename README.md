@@ -70,21 +70,21 @@ npm run lint      # análisis estático
 npm run preview   # previsualizar dist localmente
 ```
 
-## Deploy en Cloudflare Pages
+## Deploy en Cloudflare
 
 1. Subí el repositorio a GitHub.
-2. En Cloudflare Pages elegí **Create a project → Connect to Git**.
+2. En Cloudflare elegí **Workers & Pages → Create application → Connect to Git**.
 3. Usá estos valores:
 
    - Framework preset: `Vite`
    - Build command: `npm run build`
    - Output directory: `dist`
-   - Node version: `20` o superior
+   - Node version: `20.19` o superior
 
 4. Agregá `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` en **Settings → Environment variables** para Production y Preview.
-5. Agregá el dominio de Pages a las URLs permitidas en Supabase Auth.
+5. Agregá el dominio desplegado a las URLs permitidas en Supabase Auth.
 
-El archivo `public/_redirects` se copia a `dist/_redirects` durante el build y aplica `/* /index.html 200`, por lo que las rutas de React Router funcionan al recargar o abrirse directamente.
+El archivo `wrangler.jsonc` configura `assets.not_found_handling` como `single-page-application`. Así, Cloudflare sirve `index.html` para rutas de React Router como `/home`, `/groups/:id` o `/wheel/:id` sin usar reglas `_redirects` incompatibles con Workers Static Assets.
 
 ## Estructura principal
 
@@ -97,7 +97,7 @@ src/
 ├── types/            # tipos del modelo
 └── utils/random.ts   # selección uniforme y ángulo final
 supabase/migrations/  # esquema, funciones y RLS
-public/_redirects     # fallback SPA para Cloudflare Pages
+wrangler.jsonc        # assets y fallback SPA de Cloudflare Workers
 ```
 
 ## Límites conocidos del MVP
